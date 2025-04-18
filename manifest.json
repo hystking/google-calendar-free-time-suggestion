@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Google Calendar Free Time Suggestion",
+  "version": "1.0",
+  "description": "Suggest free time slots by analyzing Google Calendar events using LLM.",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://calendar.google.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://calendar.google.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
