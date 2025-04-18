@@ -4,6 +4,11 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // 'getEvents' アクションを受け取った場合に処理を実行
   if (message.action === 'getEvents') {
+    // ログ送信用ヘルパー
+    function log(msg) {
+      chrome.runtime.sendMessage({type: 'log', message: msg});
+    }
+    log('イベント取得を開始しました');
     // 取得した予定を格納する配列
     const events = [];
     // Select common event elements (may need adjustment if DOM changes)
@@ -18,6 +23,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // イベント情報を配列に追加（参加者情報は未実装）
       events.push({ title, start, end, participants: [] });
     });
+    // 取得したイベント数をログ出力
+    log(`${events.length} 件のイベントを取得しました`);
     // 抽出した予定情報をレスポンスとして返却
     sendResponse({ events });
   }

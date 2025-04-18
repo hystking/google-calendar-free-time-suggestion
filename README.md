@@ -1,48 +1,48 @@
-# Google Calendar Free Time Suggestion
+# Google Calendar 空き時間提案ツール
 
-This Chrome extension helps you discover free time slots in your Google Calendar by using an LLM to suggest unimportant events for exclusion and calculating available times around your remaining events.
+このChrome拡張機能は、LLMを使用して重要でないイベントを除外し、残りのイベントの合間の空き時間を計算することで、Googleカレンダーの空き時間を発見するのに役立ちます。
 
-## Features
-- Extracts visible events from the current Google Calendar view.
-- Uses the OpenAI API to identify potentially unimportant events based on optional natural language rules.
-- Calculates free time slots before, between, and after the filtered events.
-- Displays excluded events (with reasons) and lists recommended free time slots.
+## 機能
+- 現在のGoogleカレンダービューから表示されているイベントを抽出します。
+- OpenAI APIを使用して、自然言語ルールに基づいて重要でない可能性のあるイベントを識別します。
+- フィルタリングされたイベントの前後および間の空き時間を計算します。
+- 除外されたイベント（理由付き）とおすすめの空き時間スロットを表示します。
 
-## Installation
-1. Clone or download this repository:
+## インストール方法
+1. このリポジトリをクローンまたはダウンロードします:
    ```bash
    git clone <repository_url>
    ```
-2. Open Google Chrome and navigate to `chrome://extensions`.
-3. Enable **Developer mode** using the toggle in the top-right corner.
-4. Click **Load unpacked** and select the directory containing this extension (the folder with `manifest.json`).
-5. The extension **Google Calendar Free Time Suggestion** will now appear in your extensions list.
+2. Google Chromeを開き、`chrome://extensions`に移動します。
+3. 右上の切り替えボタンで**デベロッパーモード**を有効にします。
+4. **パッケージ化されていない拡張機能を読み込む**をクリックし、この拡張機能を含むディレクトリ（`manifest.json`のあるフォルダ）を選択します。
+5. 拡張機能**Google Calendar 空き時間提案ツール**がリストに表示されます。
 
-## Usage
-1. Go to your Google Calendar page at `https://calendar.google.com/`.
-2. Click the extension icon in the Chrome toolbar to open the popup.
-3. Enter your OpenAI API key (this will be stored securely in your browser).
-4. (Optional) Enter any exclusion rules in natural language (e.g., “Exclude lunch and casual chats”).
-5. Click **提案を取得** to fetch suggestions.
-6. The extension will:
-   - Extract the visible events from the calendar DOM.
-   - Send the events and your rules to the OpenAI Chat API to identify unimportant events.
-   - Compute free time slots based on the remaining events.
-7. View the **Excluded Events** (with reasons) and **Free Time Slots** in the popup UI.
+## 使用方法
+1. `https://calendar.google.com/`でGoogleカレンダーページにアクセスします。
+2. Chromeツールバーの拡張機能アイコンをクリックしてポップアップを開きます。
+3. OpenAI APIキーを入力します（これはブラウザに安全に保存されます）。
+4. （任意）自然言語で除外ルールを入力します（例：「ランチやカジュアルな雑談は除外」）。
+5. **提案を取得**をクリックして提案を取得します。
+6. 拡張機能は以下を実行します：
+   - カレンダーのDOMから表示されているイベントを抽出します。
+   - イベントとルールをOpenAI Chat APIに送信して、重要でないイベントを識別します。
+   - 残りのイベントに基づいて空き時間スロットを計算します。
+7. ポップアップUIで**除外されたイベント**（理由付き）と**空き時間スロット**を確認します。
 
-## Configuration
-- The OpenAI API key is stored in Chrome's local storage for this extension.
-- By default, the extension uses the `gpt-3.5-turbo` model. To change this, edit the API call in `background.js`.
+## 設定
+- OpenAI APIキーはこの拡張機能用にChromeのローカルストレージに保存されます。
+- デフォルトでは、拡張機能は`gpt-3.5-turbo`モデルを使用します。これを変更するには、`background.js`のAPI呼び出しを編集してください。
 
-## Limitations
-- Only events visible in the current calendar view are processed.
-- If Google Calendar’s DOM structure changes, you may need to update selectors in `content.js`.
-- Ensure your OpenAI API key has the necessary permissions and quota for chat completions.
+## 制限事項
+- 現在のカレンダービューに表示されているイベントのみが処理されます。
+- GoogleカレンダーのDOM構造が変更された場合、`content.js`のセレクタを更新する必要があるかもしれません。
+- OpenAI APIキーに必要な権限とチャット完了のためのクォータがあることを確認してください。
 
-## Extension Structure
-- **manifest.json**: Extension configuration (permissions, scripts, popup).
-- **content.js**: Content script for extracting event data from the page.
-- **background.js**: Service worker handling LLM calls and free slot computation.
-- **popup.html** & **popup.js**: UI and logic for user interaction.
+## 拡張機能の構造
+- **manifest.json**: 拡張機能の設定（権限、スクリプト、ポップアップ）。
+- **content.js**: ページからイベントデータを抽出するコンテンツスクリプト。
+- **background.js**: LLM呼び出しと空きスロット計算を処理するサービスワーカー。
+- **popup.html** & **popup.js**: ユーザーインタラクション用のUIとロジック。
 
-For detailed design and specifications, see `BRIEF.md`.
+詳細な設計と仕様については、`BRIEF.md`を参照してください。

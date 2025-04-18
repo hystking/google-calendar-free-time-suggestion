@@ -1,16 +1,22 @@
 // background.js
 // サービスワーカー: メッセージを受信し、LLM呼び出しや空き時間計算を行う
+// ログ送信用ヘルパー
+function log(message) {
+  chrome.runtime.sendMessage({type: 'log', message});
+}
 // Handles processing events via LLM and calculating free time slots
 // メッセージを受信して、適切なアクションを処理
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // 'processEvents' アクションでイベントの解析を開始
   if (message.action === 'processEvents') {
     const { events, rule } = message;
+    log('イベント処理を開始しました');
     // 保存されたAPIキーをChromeストレージから取得
     chrome.storage.local.get('apiKey', data => {
       const apiKey = data.apiKey;
+      log('APIキーを取得しました');
       if (!apiKey) {
-        console.error('API key not set');
+        log('APIキーが設定されていません');
         sendResponse({ excluded: [], freeSlots: [] });
         return;
       }
@@ -28,6 +34,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         ]
       };
       // OpenAI Chat APIへリクエストを送信
+      log('OpenAI API呼び出し中...');
       fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -38,20 +45,24 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       })
       .then(res => res.json())
       .then(data => {
+        log('OpenAI APIからレスポンスを取得しました');
         // LLMの出力をパースして除外候補リストを取得
         let excluded = [];
         try {
           const text = data.choices[0].message.content;
           excluded = JSON.parse(text);
+          log('LLM出力をパースしました');
         } catch (e) {
-          console.error('Failed to parse LLM output', e);
+          log('LLM出力のパースに失敗: ' + e.message);
         }
         // 除外候補を適用して空き時間スロットを計算
+        log('空き時間スロットを計算中...');
         const freeSlots = calculateFreeSlots(events, excluded);
+        log('処理が完了しました');
         sendResponse({ excluded, freeSlots });
       })
       .catch(err => {
-        console.error('LLM request failed', err);
+        log('LLMリクエストに失敗: ' + (err.message || err));
         sendResponse({ excluded: [], freeSlots: [] });
       });
     });

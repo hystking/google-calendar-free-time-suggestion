@@ -6,7 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const ruleInput = document.getElementById('ruleInput');
   const suggestButton = document.getElementById('suggestButton');
   const loadingDiv = document.getElementById('loading');
+  const logsDiv = document.getElementById('logs');
   const resultsDiv = document.getElementById('results');
+  // ログメッセージを受信して表示
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'log') {
+      const p = document.createElement('p');
+      p.style.margin = '2px 0';
+      p.innerText = message.message;
+      logsDiv.appendChild(p);
+      // 常に最新のログが見えるようにスクロール
+      logsDiv.scrollTop = logsDiv.scrollHeight;
+    }
+  });
   // Chromeストレージから保存済みのAPIキーをロード
   chrome.storage.local.get('apiKey', data => {
     if (data.apiKey) apiKeyInput.value = data.apiKey;
@@ -15,11 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
   suggestButton.addEventListener('click', () => {
     const apiKey = apiKeyInput.value.trim();
     if (!apiKey) {
-      alert('OpenAI API Key を入力してください');
+      alert('OpenAI API キーを入力してください');
       return;
     }
     // 入力されたAPIキーをChromeストレージに保存
     chrome.storage.local.set({apiKey});
+    // ログクリア
+    logsDiv.innerHTML = '';
     // 処理中のローディングインジケータを表示
     loadingDiv.style.display = 'block';
     // 前回の結果をクリア
@@ -29,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.tabs.query({active: true, currentWindow: true}, tabs => {
       if (!tabs || tabs.length === 0) {
         loadingDiv.style.display = 'none';
-        resultsDiv.innerText = 'No active tab';
+        resultsDiv.innerText = 'アクティブなタブがありません';
         return;
       }
       const tabId = tabs[0].id;
@@ -41,13 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
         chrome.runtime.sendMessage({action: 'processEvents', events, rule}, result => {
           loadingDiv.style.display = 'none';
           if (!result) {
-            resultsDiv.innerText = 'Error processing events';
+            resultsDiv.innerText = 'イベント処理中にエラーが発生しました';
             return;
           }
           const {excluded = [], freeSlots = []} = result;
           // 除外候補となったイベントとその理由を表示
           const exDiv = document.createElement('div');
-          exDiv.innerHTML = '<h2>Excluded Events</h2>';
+          exDiv.innerHTML = '<h2>除外されたイベント</h2>';
           excluded.forEach(ev => {
             const p = document.createElement('p');
             p.innerText = `${ev.title} (${ev.reason || ''})`;
@@ -56,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
           resultsDiv.appendChild(exDiv);
           // 計算された空き時間スロットを表示
           const freeDiv = document.createElement('div');
-          freeDiv.innerHTML = '<h2>Free Time Slots</h2>';
+          freeDiv.innerHTML = '<h2>空き時間スロット</h2>';
           freeSlots.forEach(slot => {
             const p = document.createElement('p');
             p.innerText = `${slot.start} - ${slot.end}`;
