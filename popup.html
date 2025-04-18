@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Free Time Suggestion</title>
+  <style>
+    body { font-family: Arial, sans-serif; min-width: 300px; padding: 10px; }
+    #ruleInput, #apiKeyInput { width: 100%; box-sizing: border-box; margin-bottom: 8px; }
+    #suggestButton { width: 100%; padding: 8px; }
+    #loading { text-align: center; margin: 10px 0; }
+    #results h2 { margin: 10px 0 5px; font-size: 14px; }
+    #results p { margin: 2px 0; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Free Time Suggestion</h1>
+  <input type="password" id="apiKeyInput" placeholder="OpenAI API Key" />
+  <textarea id="ruleInput" rows="3" placeholder="除外ルールを入力（例: ランチや雑談は除外）"></textarea>
+  <button id="suggestButton">提案を取得</button>
+  <div id="loading" style="display:none;">Loading...</div>
+  <div id="results"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
